@@ -35,9 +35,21 @@ def hundler_request(node, test, dumpresponse, count_size, nodes,FormatText=False
     """
     logging.info(f"\t|-----{node}: ")
     starttime = os.times()[4]
-    query = "/".join([URLS[node], test["get"]])
-    logging.info(f"\t|\tQuery: {Fore.BLUE} {query} ...{Style.RESET_ALL}")
-    response = requests.get(query, auth=None, stream=True)
+    if 'get' in test:
+        query = "/".join([URLS[node], test["get"]])
+        logging.info(f"\t|\tQuery: {Fore.BLUE} {query} ...{Style.RESET_ALL}")
+        response = requests.get(query, auth=None, stream=True)
+    elif 'post' in test :
+        query = "/".join([URLS[node],"fdsnws/dataselect/1/query"])
+        f = open ( test['post'], 'r' )
+        logging.info ( "\t|\tPOSTing %s" % test['post'] )
+        response = requests.post (query, data=f.read(),  stream = True )
+        f.close() 
+    else:
+        logging.info('no get an no post in  TESTS files')
+        exit(-1)
+
+
     duration = os.times()[4] - starttime
     logging.info(f"\t|\tStatus code : {response.status_code}")
     logging.info(f"\t|\tRequest duration time : {duration}")
@@ -111,7 +123,10 @@ def run(TESTS, dumpresponse, count_size, nodes):
                 continue
         logging.info(CYAN_COLOR(f"Running test .......{test['id']}"))
         federator_status_code = None
-        FormatText = isFormatText(test["get"])
+        if 'get' in test :
+            FormatText = isFormatText(test["get"])
+        else:
+            FormatText = isFormatText(test["post"])
 
         if not noeida:
             # test federator

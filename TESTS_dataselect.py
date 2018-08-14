@@ -6,5 +6,10 @@ TESTS = [
         "id": "D01 - 4C en 2011,",
         "get": "fdsnws/dataselect/1/query?network=FR&starttime=2011-10-23T20:00:00&endtime=2011-10-23T20:01:00",
 
+    },
+    {
+       "id":"D02 -  YV  post method, EIDA and RESF should NOT differ",
+       "post":"dataselect1.post",
+
     }
 ]
